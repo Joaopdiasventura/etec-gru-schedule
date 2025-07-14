@@ -133,19 +133,21 @@ export class HomePage implements OnInit {
     slot: string,
     selectedTeacher: string
   ): void {
-    const teacherName = selectedTeacher.split('(')[1].split(')')[0].trim();
-    console.log(teacherName);
+    if (selectedTeacher) {
+      const teacherName = selectedTeacher.split('(')[1].split(')')[0].trim();
 
-    for (const cName in this.teacherAssignments)
-      if (
-        cName != courseName &&
-        this.teacherAssignments[cName][day][slot]?.includes(teacherName)
-      )
-        alert(
-          `O profesor "${teacherName}" já está dando aula em ${cName} na ${day} no horário ${slot}.`
-        );
+      for (const cName in this.teacherAssignments)
+        if (
+          cName != courseName &&
+          this.teacherAssignments[cName][day][slot]?.includes(teacherName)
+        )
+          alert(
+            `O profesor "${teacherName}" já está dando aula em ${cName} na ${day} no horário ${slot}.`
+          );
+    }
 
     this.teacherAssignments[courseName][day][slot] = selectedTeacher;
+
     localStorage.setItem(
       'teacherAssignments',
       JSON.stringify(this.teacherAssignments)
