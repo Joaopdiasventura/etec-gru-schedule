@@ -98,7 +98,7 @@ export class HomePage implements OnInit {
   }
 
   public get filteredCourses(): Course[] {
-    return this.courses.filter((c) => c.period === this.selectedPeriod);
+    return this.courses.filter((c) => c.period == this.selectedPeriod);
   }
 
   public getSchedule(course: Course): string[] {
@@ -109,6 +109,7 @@ export class HomePage implements OnInit {
   public addTeacher(): void {
     if (!this.newTeacherName?.trim()) return;
     this.teachers.push(this.newTeacherName.trim());
+    this.teachers.sort();
     if (!isPlatformServer(this.platformId))
       localStorage.setItem('teachers', JSON.stringify(this.teachers));
     this.newTeacherName = '';
