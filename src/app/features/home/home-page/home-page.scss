@@ -1,0 +1,131 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
+
+$primary: #b20000;
+$accent: #ff4c4c;
+$success: #a0c340;
+$neutral-light: #f8f8f8;
+$neutral: #e6e6e6;
+$text-dark: #333;
+
+body {
+  font-family: "Roboto", sans-serif;
+  background-color: $neutral-light;
+  color: $text-dark;
+  margin: 0;
+  padding: 1rem;
+}
+
+.add-teacher-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+
+  input {
+    flex: 1;
+    max-width: 200px;
+    padding: 0.5rem;
+    border: 1px solid $neutral;
+    border-radius: 4px;
+  }
+
+  button {
+    background-color: $primary;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  .teacher-item {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 1px solid $neutral;
+    border-radius: 4px;
+    padding: 0.25rem 0.5rem;
+
+    button {
+      background: transparent;
+      border: none;
+      color: $primary;
+      font-size: 1rem;
+      margin-left: 0.5rem;
+      cursor: pointer;
+    }
+  }
+}
+
+.period-switcher,
+.course-switcher {
+  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+
+  button {
+    background: #fff;
+    border: 1px solid $neutral;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+
+    &.active {
+      background-color: $accent;
+      border-color: $accent;
+      color: #fff;
+    }
+
+    &:hover:not(.active) {
+      background-color: $neutral;
+    }
+  }
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+
+  th,
+  td {
+    border: 1px solid $neutral;
+    padding: 0.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+
+  th {
+    background-color: $primary;
+    color: #fff;
+    font-weight: 500;
+
+    em {
+      font-style: normal;
+      color: $accent;
+    }
+  }
+
+  tbody tr:nth-child(odd) {
+    background-color: #fafafa;
+  }
+
+  select {
+    width: 100%;
+    padding: 0.25rem;
+    border: 1px solid $neutral;
+    border-radius: 4px;
+    font-size: 0.9rem;
+
+    &:disabled {
+      background: $neutral-light;
+      color: $neutral;
+      cursor: not-allowed;
+    }
+  }
+}

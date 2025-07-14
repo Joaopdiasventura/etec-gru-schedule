@@ -1,0 +1,72 @@
+<div class="add-teacher-container">
+  <button (click)="downloadExcel()">Baixar Planilha</button>
+  <input type="text" placeholder="Nova matéria" [(ngModel)]="newTeacherName" />
+  <button (click)="addTeacher()">Adicionar</button>
+  @for(t of teachers; track $index){
+  <span class="teacher-item">
+    {{ t }}
+    <button (click)="deleteTeacher($index)">×</button>
+  </span>
+  }
+</div>
+
+<div class="period-switcher">
+  @for(p of periods; track $index){
+  <button
+    (click)="selectedPeriod = p; selectedCourseName = filteredCourses[0].name || ''"
+    [class.active]="p == selectedPeriod"
+  >
+    {{ p }}
+  </button>
+  }
+</div>
+
+@for(course of filteredCourses; track $index){ @if(course.name ==
+selectedCourseName){
+<h3>{{ course.name }} — {{ course.period }}</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Dia / Horário</th>
+      @for(slot of getSchedule(course); track $index){
+      <th>
+        @if(!slot.includes('Intervalo')){ {{ slot }} }
+        @if(slot.includes('Intervalo')){ <em>{{ slot }}</em> }
+      </th>
+      }
+    </tr>
+  </thead>
+  <tbody>
+    @for(day of days; track $index){
+    <tr>
+      <td>{{ day }}</td>
+      @for(slot of getSchedule(course); track $index){
+      <td>
+        <select
+          [ngModel]="teacherAssignments[course.name][day][slot]"
+          (ngModelChange)="onTeacherChange(course.name, day, slot, $event)"
+          [disabled]="slot.includes('Intervalo')"
+        >
+          <option [ngValue]="undefined">— selecione —</option>
+          @for(t of teachers; track $index){
+          <option [ngValue]="t">{{ t }}</option>
+          }
+        </select>
+      </td>
+      }
+    </tr>
+    }
+  </tbody>
+</table>
+} }
+
+<div class="course-switcher">
+  @for(course of filteredCourses; track $index){
+  <button
+    (click)="selectedCourseName = course.name"
+    [class.active]="course.name == selectedCourseName"
+  >
+    {{ course.name }}
+  </button>
+  }
+</div>
