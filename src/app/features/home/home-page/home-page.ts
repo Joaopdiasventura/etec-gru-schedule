@@ -154,13 +154,15 @@ export class HomePage implements OnInit {
       right: { style: 'thin' as BorderStyle, color: { argb: 'FFE6E6E6' } },
     };
 
-    for (const course of this.courses) {
-      const ws = workbook.addWorksheet(`${course.name} ${course.period}`, {
+    for (const period of this.periods) {
+      const ws = workbook.addWorksheet(period, {
         views: [{ showGridLines: false }],
       });
-      const slots = this.getSchedule(course);
+      const coursesInPeriod = this.courses
+        .filter((c) => c.period === period)
+        .map((c) => c.name);
 
-      const headerRow = ws.addRow(['Dia / Horário', ...slots]);
+      const headerRow = ws.addRow(['Dia / Horário', ...coursesInPeriod]);
       headerRow.eachCell((cell) => {
         cell.font = {
           name: 'Roboto',
@@ -170,7 +172,6 @@ export class HomePage implements OnInit {
         };
         cell.alignment = { vertical: 'middle', horizontal: 'center' };
         cell.border = thinBorder;
-
         if (cell.value) {
           cell.fill = {
             type: 'pattern',
@@ -180,19 +181,75 @@ export class HomePage implements OnInit {
         }
       });
 
-      this.days.forEach((day, idx) => {
-        const dataRow = [day];
-        for (const slot of slots) {
-          const teacher = this.teacherAssignments[course.name][day]?.[slot];
-          dataRow.push(teacher ?? '');
+      for (const day of this.days) {
+        this.getSchedule({ period, name: '' }).forEach((slot, idx) => {
+          const label = `${day} ${slot}`;
+          const rowData = [label];
+          for (const courseName of coursesInPeriod) {
+            const teacher = this.teacherAssignments[courseName][day]?.[slot];
+            rowData.push(teacher ?? '');
+          }
+          const row = ws.addRow(rowData);
+          row.eachCell((cell) => {
+            cell.font = { name: 'Roboto', size: 10 };
+            cell.alignment = {
+              vertical: 'middle',
+              horizontal: 'center',
+              wrapText: true,
+            };
+            cell.border = thinBorder;
+            if (idx % 2 === 1) {
+              cell.fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'FFF8F8F8' },
+              };
+            }
+          });
+        });
+      }
+    }
+
+    for (const course of this.courses) {
+      const ws = workbook.addWorksheet(`${course.name} ${course.period}`, {
+        views: [{ showGridLines: false }],
+      });
+
+      const slots = this.getSchedule(course);
+
+      const header = ['Horário', ...this.days];
+      const headerRow = ws.addRow(header);
+
+      headerRow.eachCell((cell) => {
+        cell.font = {
+          name: 'Roboto',
+          size: 10,
+          bold: true,
+          color: { argb: 'FFFFFFFF' },
+        };
+        cell.alignment = { vertical: 'middle', horizontal: 'center' };
+        cell.border = thinBorder;
+        if (cell.value) {
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFB20000' },
+          };
         }
-        const row = ws.addRow(dataRow);
+      });
+
+      slots.forEach((slot, idxSlot) => {
+        const rowData = [slot];
+        this.days.forEach((day) => {
+          const teacher = this.teacherAssignments[course.name][day]?.[slot];
+          rowData.push(teacher ?? '');
+        });
+        const row = ws.addRow(rowData);
         row.eachCell((cell) => {
           cell.font = { name: 'Roboto', size: 10 };
           cell.alignment = { vertical: 'middle', horizontal: 'center' };
           cell.border = thinBorder;
-
-          if (idx % 2 == 1) {
+          if (idxSlot % 2 === 1) {
             cell.fill = {
               type: 'pattern',
               pattern: 'solid',
@@ -205,14 +262,14 @@ export class HomePage implements OnInit {
       ws.columns.forEach((col) => (col.width = 18));
     }
 
-    workbook.worksheets.forEach((worksheet) =>
-      worksheet.columns?.forEach((column) => {
+    workbook.worksheets.forEach((ws) =>
+      ws.columns?.forEach((column) => {
         let maxLength = 10;
-        if (!column || !column.eachCell) return;
-        column.eachCell({ includeEmpty: true }, (cell) => {
-          const cellValue = cell.value ? String(cell.value) : '';
-          if (cellValue.length > maxLength) maxLength = cellValue.length;
-        });
+        if (column.eachCell)
+          column.eachCell({ includeEmpty: true }, (cell) => {
+            const val = cell.value ? String(cell.value) : '';
+            maxLength = Math.max(maxLength, val.length);
+          });
         column.width = maxLength * 1.5;
       })
     );

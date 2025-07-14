@@ -27,20 +27,20 @@ selectedCourseName){
 <table>
   <thead>
     <tr>
-      <th>Dia / Horário</th>
-      @for(slot of getSchedule(course); track $index){
-      <th>
-        @if(!slot.includes('Intervalo')){ {{ slot }} }
-        @if(slot.includes('Intervalo')){ <em>{{ slot }}</em> }
-      </th>
+      <th>Horário</th>
+      @for(day of days; track $index){
+      <th>{{ day }}</th>
       }
     </tr>
   </thead>
   <tbody>
-    @for(day of days; track $index){
+    @for(slot of getSchedule(course); track $index){
     <tr>
-      <td>{{ day }}</td>
-      @for(slot of getSchedule(course); track $index){
+      <td>
+        @if(!slot.includes('Intervalo')){ {{ slot }} }
+        @if(slot.includes('Intervalo')){ <em>{{ slot }}</em> }
+      </td>
+      @for(day of days; track $index){
       <td>
         <select
           [ngModel]="teacherAssignments[course.name][day][slot]"
