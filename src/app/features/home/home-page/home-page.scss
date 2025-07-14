@@ -1,4 +1,5 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
+@use "sass:list";
+@use "sass:color";
 
 $primary: #b20000;
 $accent: #ff4c4c;
@@ -7,82 +8,129 @@ $neutral-light: #f8f8f8;
 $neutral: #e6e6e6;
 $text-dark: #333;
 
-body {
-  font-family: "Roboto", sans-serif;
-  background-color: $neutral-light;
-  color: $text-dark;
-  margin: 0;
-  padding: 1rem;
+$font-size-sm: 0.9rem;
+$font-size-md: 1rem;
+$font-weight-bold: 500;
+$space-xs: 0.25rem;
+$space-sm: 0.5rem;
+$space-md: 1rem;
+$space-lg: 1.5rem;
+
+@mixin border($width: 1px, $style: solid, $color: $neutral) {
+  border: $width $style $color;
+}
+
+@mixin transition($time: 0.2s, $ease: ease-in-out, $props...) {
+  transition: #{list.join($props, ", ")} $time $ease;
 }
 
 .add-teacher-container {
+  max-height: 25vh;
+  overflow-x: auto;
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
-  align-items: center;
-  margin-bottom: 1.5rem;
+  gap: $space-md;
+  margin-bottom: $space-lg;
+
+  &::-webkit-scrollbar {
+    width: 1.25vw;
+    background-color: transparent;
+    cursor: pointer;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: $text-dark;
+    border-radius: 0.5vw;
+    border: 0.25vw solid transparent;
+    background-clip: content-box;
+
+    &:hover {
+      background-color: $primary;
+    }
+  }
+
+  input,
+  button {
+    @include transition(background-color, border-color, transform);
+  }
 
   input {
-    flex: 1;
-    max-width: 200px;
-    padding: 0.5rem;
-    border: 1px solid $neutral;
+    flex: 1 1 200px;
+    padding: $space-sm;
+    @include border();
     border-radius: 4px;
+    &:focus {
+      outline: none;
+      border-color: $primary;
+      box-shadow: 0 0 0 2px rgba($primary, 0.2);
+    }
   }
 
   button {
-    background-color: $primary;
+    background: $primary;
     color: #fff;
-    border: none;
-    padding: 0.5rem 1rem;
+    padding: $space-sm $space-md;
+    @include border(0);
     border-radius: 4px;
+    font-weight: $font-weight-bold;
     cursor: pointer;
-    font-weight: 500;
+    &:hover {
+      background: color.adjust($primary, $lightness: -5%);
+      transform: translateY(-1px);
+    }
   }
 
   .teacher-item {
     display: flex;
     align-items: center;
     background: #fff;
-    border: 1px solid $neutral;
+    padding: $space-xs $space-sm;
+    @include border();
     border-radius: 4px;
-    padding: 0.25rem 0.5rem;
 
     button {
       background: transparent;
       border: none;
       color: $primary;
       font-size: 1rem;
-      margin-left: 0.5rem;
+      margin-left: $space-sm;
       cursor: pointer;
+      @include transition(color);
+      &:hover {
+        color: color.adjust($primary, $lightness: -10%);
+      }
     }
   }
 }
 
 .period-switcher,
 .course-switcher {
-  text-align: center;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
+  gap: $space-sm;
+  justify-content: center;
+  margin-bottom: $space-md;
 
   button {
     background: #fff;
-    border: 1px solid $neutral;
-    padding: 0.5rem 1rem;
+    padding: $space-sm $space-md;
+    @include border();
     border-radius: 4px;
+    font-weight: $font-weight-bold;
     cursor: pointer;
-    font-weight: 500;
+    @include transition(background-color, color);
 
     &.active {
-      background-color: $accent;
+      background: $accent;
       border-color: $accent;
       color: #fff;
     }
-
     &:hover:not(.active) {
-      background-color: $neutral;
+      background: $neutral;
     }
   }
 }
@@ -90,38 +138,41 @@ body {
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 1.5rem;
+  margin-bottom: $space-lg;
 
   th,
   td {
-    border: 1px solid $neutral;
-    padding: 0.5rem;
+    padding: $space-sm;
+    @include border();
     text-align: center;
-    font-size: 0.9rem;
+    vertical-align: middle;
   }
 
   th {
-    background-color: $primary;
+    background: $primary;
     color: #fff;
-    font-weight: 500;
-
+    font-weight: $font-weight-bold;
+    @include transition(background-color);
     em {
       font-style: normal;
       color: $accent;
     }
   }
 
-  tbody tr:nth-child(odd) {
-    background-color: #fafafa;
+  tbody {
+    tr:nth-child(odd) {
+      background: #fafafa;
+    }
   }
 
   select {
     width: 100%;
-    padding: 0.25rem;
-    border: 1px solid $neutral;
+    padding: $space-xs;
+    outline: none;
+    @include border();
     border-radius: 4px;
-    font-size: 0.9rem;
-
+    font-size: $font-size-sm;
+    @include transition(border-color, box-shadow);
     &:disabled {
       background: $neutral-light;
       color: $neutral;
