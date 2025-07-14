@@ -50,10 +50,12 @@ export class HomePage implements OnInit {
     'Sexta-feira',
   ];
   public teachers: string[] = [];
+
   public teacherAssignments: Record<
     string,
     Record<string, Record<string, string | undefined>>
   > = {};
+
   private platformId = inject(PLATFORM_ID);
 
   public morningSchedule = [
@@ -82,18 +84,22 @@ export class HomePage implements OnInit {
 
   public ngOnInit() {
     if (!isPlatformServer(this.platformId)) {
-      const saved = localStorage.getItem('teachers');
-      this.teachers = saved ? JSON.parse(saved) : [];
+      const savedTeachers = localStorage.getItem('teachers');
+      if (savedTeachers) this.teachers = JSON.parse(savedTeachers);
+      const savedAssign = localStorage.getItem('teacherAssignments');
+      if (savedAssign) this.teacherAssignments = JSON.parse(savedAssign);
     }
-    this.courses.forEach((c) => {
-      this.teacherAssignments[c.name] = {};
-      this.days.forEach((d) => {
-        this.teacherAssignments[c.name][d] = {};
-        this.getSchedule(c).forEach(
-          (s) => (this.teacherAssignments[c.name][d][s] = undefined)
-        );
+    if (Object.keys(this.teacherAssignments).length == 0) {
+      this.courses.forEach((c) => {
+        this.teacherAssignments[c.name] = {};
+        this.days.forEach((d) => {
+          this.teacherAssignments[c.name][d] = {};
+          this.getSchedule(c).forEach((s) => {
+            this.teacherAssignments[c.name][d][s] = undefined;
+          });
+        });
       });
-    });
+    }
     this.selectedCourseName = this.filteredCourses[0]?.name || '';
   }
 
@@ -140,6 +146,10 @@ export class HomePage implements OnInit {
         );
 
     this.teacherAssignments[courseName][day][slot] = selectedTeacher;
+    localStorage.setItem(
+      'teacherAssignments',
+      JSON.stringify(this.teacherAssignments)
+    );
   }
 
   public async downloadExcel() {
